@@ -1,0 +1,45 @@
+<p>
+Usage:
+<br>
+<b>&#091#module name="app_101ru"#&#093</b>
+<br>
+URL: <a href="/popup/app_101ru.html" target=_blank>/popup/app_101ru.html</a>
+</p>
+
+
+ <!-- action usual -->
+ [#if DATA_SOURCE="ru101_stations" || DATA_SOURCE=""#]
+ <!-- table ru101_stations search -->
+ [#if VIEW_MODE="search_ru101_stations" || VIEW_MODE=""#]
+  [#inc ru101_stations_search_admin.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_stations search -->
+ <!-- table ru101_stations edit -->
+ [#if VIEW_MODE="edit_ru101_stations"#]
+   [#inc ru101_stations_edit.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_stations edit -->
+ <!-- table ru101_stations view --> 
+ [#if VIEW_MODE="view_ru101_stations"#]
+   [#inc ru101_stations_view.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_stations view -->
+ [#endif DATA_SOURCE#]
+ <!-- action usual -->
+ [#if DATA_SOURCE="ru101_categories"#]
+ <!-- table ru101_categories search -->
+ [#if VIEW_MODE="search_ru101_categories" || VIEW_MODE=""#]
+  [#inc ru101_categories_search_admin.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_categories search -->
+ <!-- table ru101_categories edit -->
+ [#if VIEW_MODE="edit_ru101_categories"#]
+   [#inc ru101_categories_edit.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_categories edit -->
+ <!-- table ru101_categories view --> 
+ [#if VIEW_MODE="view_ru101_categories"#]
+   [#inc ru101_categories_view.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table ru101_categories view -->
+ [#endif DATA_SOURCE#]
