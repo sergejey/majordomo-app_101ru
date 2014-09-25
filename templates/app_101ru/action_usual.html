@@ -1,8 +1,3 @@
-<style>
-.playBorderClass{
-  border: 1px solid #FFFF00;
-}
-</style>
 <script language="javascript">
 
  var clickId=0;
@@ -10,23 +5,17 @@
  function play101station(id) {
 
   clickId=id;
-  $('#play'+clickId).addClass('playBorderClass'); 
-
   var url="<#ROOTHTML#>popup/app_101ru.html?";
   url+='&ajax=1&op=playstation&id='+id;
+  $('#result'+clickId).html('<img src="<#ROOTHTML#>img/ajax-loader.gif" border="0">');
   $.ajax({
     url: url
    }).done(function(data) { 
-    //var obj=jQuery.parseJSON(data);
-    //alert(data);
-    $('#radio_result').html(data);
-    $('#play'+clickId).removeClass('playBorderClass');
+    $('#result'+clickId).html(data);
    });
   return false;
  }
 </script>
-<div id='radio_result'>&nbsp;</div>
-
 [#begin CATEGORIES#]
 <div>
 <a href="#" onClick="$('#radiocategory[#ID#]').toggle();return false;"><h2>[#TITLE#]</h2></a>
@@ -36,6 +25,7 @@
    <a href="#" onClick="return play101station([#ID#]);"><img src="<#ROOTHTML#>img/btn/btn_play.png" border="0" align="absmiddle" id="play[#ID#]"></a>
    [#TITLE#]
    <a href="[#PAGE_URL#]" target=_blank>[...]</a>
+   <span id='result[#ID#]'></span>
   </h4>
  [#end STATIONS#]
 </div>
