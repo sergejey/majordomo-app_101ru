@@ -218,7 +218,9 @@ function usual(&$out) {
 */
  function refresh_all_stations() {
    //http://101.ru/?an=port_allchannels
-   SQLExec("DELETE FROM ru101_stations");
+   //SQLExec("DELETE FROM ru101_stations");
+
+   $ids=array();
    SQLExec("DELETE FROM ru101_categories");
 
    $page1=getURL('http://101.ru/?an=port_allchannels', 5);
@@ -252,13 +254,25 @@ function usual(&$out) {
         $station['TITLE']=$title;
         $station['PAGE_URL']=$url;
         $station['CATEGORY_ID']=$rec['ID'];
-        SQLInsert('ru101_stations', $station);
+        $old_station=SQLSelectOne("SELECT * FROM ru101_stations WHERE TITLE LIKE '".DBSafe($station['TITLE'])."'");
+        if ($old_station['ID']) {
+         $station['ID']=$old_station['ID'];
+         SQLUpdate('ru101_stations', $station);
+        } else {
+         $station['ID']=SQLInsert('ru101_stations', $station);
+        }
+        $ids[]=$station['ID'];
        }
      } else {
       //echo "No matches";exit;
      }
 
     }
+
+    if (count($ids>0)) {
+     SQLExec("DELETE FROM ru101_stations WHERE ID NOT IN (".implode(', ', $ids).")");
+    }
+
    }
 
  }
