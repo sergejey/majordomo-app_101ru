@@ -176,7 +176,7 @@ function usual(&$out) {
   if ($op=='playstation') {
    global $id;
 
-   $rec=SQLSelectOne("SELECT * FROM ru101_stations WHERE ID='".(int)$id."'");
+   $rec=SQLSelectOne("SELECT * FROM ru101_stations WHERE (ID='".(int)$id."' OR TITLE LIKE '".DBSafe($id)."')");
    if ($rec['PAGE_URL']) {
      $data=getURL($rec['PAGE_URL'], 5);
      if (preg_match('/\'pl\':\'(\/play.m3u.+?)\'/isu', $data, $matches)) {
