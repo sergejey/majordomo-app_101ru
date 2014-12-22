@@ -188,10 +188,12 @@ function usual(&$out) {
       $items=$data->playlist;
       $playlist_url=$items[0]->file;
       //echo $playlist_url."\n";
-      $out['PLAY']=$playlist_url;
-      $url=BASE_URL.ROOTHTML.'popup/app_player.html?ajax=1';
-      $url.="&command=refresh&play=".urlencode($out['PLAY']);
-      getURL($url, 0);
+      if ($playlist_url!='') {
+       $out['PLAY']=$playlist_url;
+       $url=BASE_URL.ROOTHTML.'popup/app_player.html?ajax=1';
+       $url.="&command=refresh&play=".urlencode($out['PLAY']);
+       getURL($url, 0);
+      }
      }
    }
    echo "OK";
