@@ -181,6 +181,7 @@ function usual(&$out) {
      $data=getURL($rec['PAGE_URL'], 5);
      if (preg_match('/\'pl\':\'(\/play.m3u.+?)\'/isu', $data, $matches)) {
       $playlist_json='http://101.ru'.$matches[1];
+      $playlist_json=str_replace('362', '372', $playlist_json);
       $playlist_json=str_replace('|', '&', $playlist_json);
       $playlist_data=getURL($playlist_json, 5);
       $data=json_decode($playlist_data);
