@@ -344,7 +344,7 @@ function usual(&$out) {
 *
 * @access private
 */
- function dbInstall() {
+ function dbInstall($data) {
 /*
 ru101_stations - Stations
 ru101_categories - Categories
