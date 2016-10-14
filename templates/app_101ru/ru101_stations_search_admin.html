@@ -1,7 +1,8 @@
 
 <!-- table ru101_stations search -->
 <p>
-<a href="?view_mode=refresh&data_source=<#DATA_SOURCE#>" class="btn"><#LANG_REFRESH#></a>
+<a href="?view_mode=refresh&data_source=<#DATA_SOURCE#>" class="btn btn-default"><#LANG_REFRESH#></a>
+ <a href="?view_mode=clear&data_source=<#DATA_SOURCE#>" class="btn btn-default" onClick="return confirm('Are you sure?');"><#LANG_RESET#></a>
 </p>
 <!-- results -->
 [#if RESULT#]

@@ -147,6 +147,13 @@ function admin(&$out) {
    $this->refresh_all_stations();
    $this->redirect("?");
   }
+
+  if ($this->view_mode=='clear') {
+   SQLExec("DELETE FROM ru101_categories");
+   SQLExec("DELETE FROM ru101_stations");
+   $this->redirect("?");
+  }
+
  }
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
@@ -177,24 +184,24 @@ function usual(&$out) {
    global $id;
 
    $rec=SQLSelectOne("SELECT * FROM ru101_stations WHERE (ID='".(int)$id."' OR TITLE LIKE '".DBSafe($id)."')");
+   DebMes('Getting radio page from '.$rec['PAGE_URL']);
    if ($rec['PAGE_URL']) {
      $data=getURL($rec['PAGE_URL'], 5);
-     if (preg_match('/\'pl\':\'(\/play.m3u.+?)\'/isu', $data, $matches)) {
-      $playlist_json='http://101.ru'.$matches[1];
-      $playlist_json=str_replace('362', '372', $playlist_json);
-      $playlist_json=str_replace('|', '&', $playlist_json);
-      $playlist_data=getURL($playlist_json, 5);
-      $data=json_decode($playlist_data);
-      //var_dump($data);
-      $items=$data->playlist;
-      $playlist_url=$items[0]->file;
-      //echo $playlist_url."\n";
+     if (preg_match('/(\/api\/channel\/getServers\/.+?)\'/isu', $data, $matches)) {
+      $json_url='http://101.ru'.$matches[0];
+      $data=getURL($json_url);
+      $radio_data=json_decode($data,true);
+      //DebMes(serialize($radio_data));
+      //return 0;
+      $playlist_url=$radio_data['playlist'][0]['file'];
       if ($playlist_url!='') {
        $out['PLAY']=$playlist_url;
        $url=BASE_URL.ROOTHTML.'popup/app_player.html?ajax=1';
        $url.="&command=refresh&play=".urlencode($out['PLAY']);
        getURL($url, 0);
       }
+     } else {
+      DebMes("Cannot find playlist in ".$rec['PAGE_URL']);
      }
    }
    echo "OK";
@@ -226,10 +233,12 @@ function usual(&$out) {
    $ids=array();
    SQLExec("DELETE FROM ru101_categories");
 
-   $page1=getURL('http://101.ru/?an=port_allchannels', 5);
-   //<a href="/?an=port_groupchannels&amp;group=2" class="h7 genre left">Танцевальные</a>
+   $url='http://101.ru/radio-top';
+   //Debmes("Gettign categories from ".$url);
+   $page1=getURL($url, 5);
    $seen=array();
-   if (preg_match_all('/tab-item "><a href="(\/\?an=port_groupchannels\&amp;group=\d+)">(.+?)<\/a>/isu', $page1, $matches)) {
+   $ids=array(0);
+   if (preg_match_all('/<li><a href="(\/radio-group\/group\/\d+)">(.+?)<\/a><\/li>/isu', $page1, $matches)) {
     //categories
     $total=count($matches[1]);
     for($i=0;$i<$total;$i++) {
@@ -244,10 +253,13 @@ function usual(&$out) {
      $rec['ID']=SQLInsert('ru101_categories', $rec);
 
      $url=str_replace('&amp;', '&', $url);
-     DebMes($url);
+     //DebMes($url);
      $page2=getURL($url, 5);
+     if (preg_match('/list list-channels.+<\/ul>/uis',$page2,$m)) {
+      $page2=$m[0];
+     }
 
-     if (preg_match_all('/href="(\/\?an=port_channel_mp3\&amp;channel=\d+)">([^<]+?)<\/a>/isu', $page2, $m)) {
+     if (preg_match_all('/href="(\/radio\/channel.+?)".+?caps htitle">(.+?)<\/h3>/isu', $page2, $m)) {
        $total2=count($m[1]);
        for($i2=0;$i2<$total2;$i2++) {
         $title=$m[2][$i2];
