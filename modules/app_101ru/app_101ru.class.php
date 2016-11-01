@@ -217,6 +217,13 @@ function usual(&$out) {
  for($i=0;$i<$total;$i++) {
   $categories[$i]['STATIONS']=SQLSelect("SELECT * FROM ru101_stations WHERE CATEGORY_ID='".$categories[$i]['ID']."' ORDER BY TITLE");
  }
+
+ if (!$categories[0]['ID']) {
+  $rec=array('ID'=>0, 'TITLE'=>'All');
+  $rec['STATIONS']=SQLSelect("SELECT * FROM ru101_stations WHERE 1 ORDER BY TITLE");
+  $categories=array($rec);
+ } else {
+ }
  $out['CATEGORIES']=$categories;
 
 }
@@ -240,9 +247,13 @@ function usual(&$out) {
    $page1=getURL($url, 5);
    $seen=array();
    $ids=array(0);
-   if (preg_match_all('/<li><a href="(\/radio-group\/group\/\d+)">(.+?)<\/a><\/li>/isu', $page1, $matches)) {
+
+
+
+   if (preg_match_all('/<a href="(\/radio-group\/group\/\d+)">(.+?)<\/a>/isu', $page1, $matches)) {
     //categories
     $total=count($matches[1]);
+
     for($i=0;$i<$total;$i++) {
      $title=$matches[2][$i];
      if ($seen[$title]) {
