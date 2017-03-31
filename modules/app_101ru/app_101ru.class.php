@@ -241,11 +241,13 @@ function usual(&$out) {
 
    $ids=array();
    SQLExec("DELETE FROM ru101_categories");
+   SQLExec("UPDATE ru101_stations SET CATEGORY_ID=0");
 
    $url='http://101.ru/radio-top';
    //Debmes("Gettign categories from ".$url);
    $page1=getURL($url, 5);
    $seen=array();
+   $seen_stations=array();
    $ids=array(0);
 
 
@@ -276,13 +278,17 @@ function usual(&$out) {
        $total2=count($m[1]);
        for($i2=0;$i2<$total2;$i2++) {
         $title=$m[2][$i2];
+        if (isset($seen_stations[$title])) {
+         continue;
+        }
+        $seen_stations[$title]=1;
         $url='http://101.ru'.$m[1][$i2];
         $url=str_replace('&amp;', '&', $url);
         $station=array();
         $station['TITLE']=$title;
         $station['PAGE_URL']=$url;
         $station['CATEGORY_ID']=$rec['ID'];
-        $old_station=SQLSelectOne("SELECT * FROM ru101_stations WHERE TITLE LIKE '".DBSafe($station['TITLE'])."'");
+        $old_station=SQLSelectOne("SELECT * FROM ru101_stations WHERE (TITLE LIKE '".DBSafe($station['TITLE'])."' OR PAGE_URL LIKE '".DBSafe($station['PAGE_URL'])."')");
         if ($old_station['ID']) {
          $station['ID']=$old_station['ID'];
          SQLUpdate('ru101_stations', $station);
