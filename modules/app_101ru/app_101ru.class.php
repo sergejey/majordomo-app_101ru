@@ -274,7 +274,9 @@ function usual(&$out) {
       $page2=$m[0];
      }
 
-     if (preg_match_all('/href="(\/radio\/channel.+?)".+?caps htitle">(.+?)<\/h3>/isu', $page2, $m)) {
+
+     if (preg_match_all('/href="(\/radio\/channel.+?)".+?caps htitle">(.+?)<\/div>/isu', $page2, $m)) {
+
        $total2=count($m[1]);
        for($i2=0;$i2<$total2;$i2++) {
         $title=$m[2][$i2];
