@@ -256,12 +256,14 @@ function usual(&$out) {
     //categories
     $total=count($matches[1]);
 
+
     for($i=0;$i<$total;$i++) {
      $title=$matches[2][$i];
      if ($seen[$title]) {
       continue;
      }
      $url='http://101.ru'.$matches[1][$i];
+
      $rec=array();
      $seen[$title]=1;
      $rec['TITLE']=$title;
@@ -274,9 +276,7 @@ function usual(&$out) {
       $page2=$m[0];
      }
 
-
      if (preg_match_all('/href="(\/radio\/channel.+?)".+?caps htitle">(.+?)<\/div>/isu', $page2, $m)) {
-
        $total2=count($m[1]);
        for($i2=0;$i2<$total2;$i2++) {
         $title=$m[2][$i2];
