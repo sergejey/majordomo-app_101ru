@@ -188,20 +188,26 @@ function usual(&$out) {
    if ($rec['PAGE_URL']) {
      $data=getURL($rec['PAGE_URL'], 5);
      if (preg_match('/(\/api\/channel\/getServers\/.+?)\'/isu', $data, $matches)) {
-      $json_url='http://101.ru'.$matches[1];
-      $data=getURL($json_url);
-      $radio_data=json_decode($data,true);
+      $json_url = 'http://101.ru' . $matches[1];
+      $data = getURL($json_url);
+      $radio_data = json_decode($data, true);
       //DebMes(serialize($radio_data));
       //return 0;
-      $playlist_url=$radio_data['playlist'][0]['file'];
-      if ($playlist_url!='') {
-       $out['PLAY']=$playlist_url;
-       $url=BASE_URL.ROOTHTML.'popup/app_player.html?ajax=1';
-       $url.="&command=refresh&play=".urlencode($out['PLAY']);
+      $playlist_url = $radio_data['playlist'][0]['file'];
+      if ($playlist_url != '') {
+       $out['PLAY'] = $playlist_url;
+       $url = BASE_URL . ROOTHTML . 'popup/app_player.html?ajax=1';
+       $url .= "&command=refresh&play=" . urlencode($out['PLAY']);
        getURL($url, 0);
       } else {
-       DebMes("Cannot find playlist in ".$json_url);
+       DebMes("Cannot find playlist in " . $json_url);
       }
+     } elseif (preg_match('/id="footer-player" src="(http.+?)"/isu',$data,$matches)) {
+      $playlist_url=$matches[1];
+      $out['PLAY'] = $playlist_url;
+      $url = BASE_URL . ROOTHTML . 'popup/app_player.html?ajax=1';
+      $url .= "&command=refresh&play=" . urlencode($out['PLAY']);
+      getURL($url, 0);
      } else {
       DebMes("Cannot find playlist in ".$rec['PAGE_URL']);
      }
