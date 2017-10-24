@@ -174,50 +174,34 @@ function admin(&$out) {
 function usual(&$out) {
  global $op;
  global $ajax;
+ global $id;
+
+ if ($this->mode == 'play') {
+  $streamURL=$this->getStreamURL($id);
+  $out['STREAM_URL']=$streamURL;
+ }
+
+
  if ($ajax) {
 //  DebMes("101msg");
   if (!headers_sent()) {
    header ("HTTP/1.0: 200 OK\n");
    header ('Content-Type: text/html; charset=utf-8');
   }
-  if ($op=='playstation') {
-   global $id;
 
-   $rec=SQLSelectOne("SELECT * FROM ru101_stations WHERE (ID='".(int)$id."' OR TITLE LIKE '".DBSafe($id)."')");
-   DebMes('Getting radio page from '.$rec['PAGE_URL']);
-   if ($rec['PAGE_URL']) {
-     $data=getURL($rec['PAGE_URL'], 5);
-     if (preg_match('/(\/api\/channel\/getServers\/.+?)[\'"]/isu', $data, $matches)) {
-      $json_url = 'http://101.ru' . $matches[1];
-      $data = getURL($json_url);
-      $radio_data = json_decode($data, true);
-      //DebMes(serialize($radio_data));
-      //return 0;
-      $playlist_url = $radio_data['playlist'][0]['file'];
-      if ($playlist_url != '') {
-       $out['PLAY'] = $playlist_url;
-       $url = BASE_URL . ROOTHTML . 'popup/app_player.html?ajax=1';
-       $url .= "&command=refresh&play=" . urlencode($out['PLAY']);
-       getURL($url, 0);
-      } else {
-       DebMes("Cannot find playlist in " . $json_url);
-      }
-     } elseif (preg_match('/id="footer-player" src="(http.+?)"/isu',$data,$matches)) {
-      $playlist_url=$matches[1];
-      $out['PLAY'] = $playlist_url;
-      $url = BASE_URL . ROOTHTML . 'popup/app_player.html?ajax=1';
-      $url .= "&command=refresh&play=" . urlencode($out['PLAY']);
-      getURL($url, 0);
-     } else {
-      DebMes("Cannot find playlist in ".$rec['PAGE_URL']);
-     }
+  if ($op=='playstation') {
+   $streamURL=$this->getStreamURL($id);
+   if ($streamURL) {
+    $out['PLAY'] = $streamURL;
+    $url = BASE_URL . ROOTHTML . 'popup/app_player.html?ajax=1';
+    $url .= "&command=refresh&play=" . urlencode($out['PLAY']);
+    getURL($url, 0);
    }
    echo "OK";
   }
   exit;
  }
  
-
  $categories=SQLSelect("SELECT * FROM ru101_categories ORDER BY TITLE");
  $total=count($categories);
  for($i=0;$i<$total;$i++) {
@@ -233,6 +217,31 @@ function usual(&$out) {
  $out['CATEGORIES']=$categories;
 
 }
+
+ function getStreamURL($id) {
+  $rec=SQLSelectOne("SELECT * FROM ru101_stations WHERE (ID='".(int)$id."' OR TITLE LIKE '".DBSafe($id)."')");
+  DebMes('Getting radio page from '.$rec['PAGE_URL']);
+  if ($rec['PAGE_URL']) {
+   $data = getURL($rec['PAGE_URL'], 5);
+   if (preg_match('/(\/api\/channel\/getServers\/.+?)[\'"]/isu', $data, $matches)) {
+    $json_url = 'http://101.ru' . $matches[1];
+    $data = getURL($json_url);
+    $radio_data = json_decode($data, true);
+    $playlist_url = $radio_data['playlist'][0]['file'];
+    if ($playlist_url != '') {
+     return $playlist_url;
+    } else {
+     DebMes("Cannot find playlist in " . $json_url);
+    }
+   } elseif (preg_match('/id="footer-player" src="(http.+?)"/isu', $data, $matches)) {
+    $playlist_url = $matches[1];
+    return $playlist_url;
+   } else {
+    DebMes("Cannot find playlist in " . $rec['PAGE_URL']);
+   }
+  }
+   return false;
+ }
 
 /**
 * Title
