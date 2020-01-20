@@ -223,7 +223,7 @@ function usual(&$out) {
   DebMes('Getting radio page from '.$rec['PAGE_URL']);
   if ($rec['PAGE_URL']) {
    $data = getURL($rec['PAGE_URL'], 5);
-   if (preg_match('/(\/api\/channel\/getServers\/.+?)[\'"]/isu', $data, $matches)) {
+   if (preg_match('/(\/api\/channel\/getListServersChannel\/.+?)[\'"]/isu', $data, $matches)) {
     $json_url = 'http://101.ru' . $matches[1];
     $data = getURL($json_url);
     $radio_data = json_decode($data, true);
@@ -267,7 +267,7 @@ function usual(&$out) {
 
 
 
-   if (preg_match_all('/<a href="(\/radio-group\/group\/\d+)">(.+?)<\/a>/isu', $page1, $matches)) {
+   if (preg_match_all('/href="(\/radio-top\/group\/\d+)"\W*.*\W*>\W(\W*)<\/a>/', $page1, $matches)) {
     //categories
     $total=count($matches[1]);
 
@@ -291,7 +291,7 @@ function usual(&$out) {
       $page2=$m[0];
      }
 
-     if (preg_match_all('/href="(\/radio\/channel.+?)".+?caps htitle">(.+?)<\/div>/isu', $page2, $m)) {
+     if (preg_match_all('/href="(\/radio\/channel\/\d+)" .*\W*<span itemprop="name broadcastDisplayName">(.+?)<\/span>/', $page2, $m)) {
        $total2=count($m[1]);
        for($i2=0;$i2<$total2;$i2++) {
         $title=$m[2][$i2];
